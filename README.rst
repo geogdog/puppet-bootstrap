@@ -2,7 +2,7 @@
 puppet-bootstrap
 ================
 
-The idea is that ```vagrant up``` gives you a puppetmaster with puppetdb.  You
+The idea is that ``vagrant up`` gives you a puppetmaster with puppetdb.  You
 could then put your own modules on it to start doing things correctly.
 
 Known Issues
