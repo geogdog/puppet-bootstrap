@@ -1,1 +1,3 @@
 .vagrant
+bootstrap/modules/
+puppet/modules/
