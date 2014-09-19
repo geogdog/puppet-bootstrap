@@ -17,15 +17,44 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     puppetmaster.vm.hostname = "test-puppetmaster-001.puppetbootstrap.local"
 
     # forwarded port for apache
-    puppetmaster.vm.network "forwarded_port", guest: 80, host: 8080
-
+    #puppetmaster.vm.network "forwarded_port", guest: 80, host: 8080
+    
+    # Internal Network interface
+    puppetmaster.vm.network "private_network", ip: "192.168.122.10"
 
     # sync'd folders for puppet master
     puppetmaster.vm.synced_folder "puppet/manifests/", "/etc/puppet/manifests"
     puppetmaster.vm.synced_folder "puppet/modules/", "/etc/puppet/modules"
+
+    puppetmaster.vm.provision "puppet" do |puppet|
+      puppet.manifests_path = "bootstrap/manifests"
+      puppet.module_path = "bootstrap/modules"
+      puppet.manifest_file  = "site.pp"
+    end
+
   end
 
   config.vm.provision "shell", path: "scripts/puppet_bootstrap.sh"
+
+
+  # Make this part configurable from a YAML boxes.yaml file?
+  config.vm.define "client1" do |client1|
+    client1.vm.hostname = "client1.puppetbootstrap.local"
+    client1.vm.provision "puppet_server" do |puppet|
+      puppet.puppet_server = "puppet"
+      #puppet.options = "--verbose --debug"
+      puppet.options = "--verbose"
+    end
+  end
+
+  config.vm.define "client2" do |client2|
+    client2.vm.hostname = "client2.puppetbootstrap.local"
+    client2.vm.provision "puppet_server" do |puppet|
+      puppet.puppet_server = "puppet"
+      #puppet.options = "--verbose --debug"
+      puppet.options = "--verbose"
+    end
+  end
 
   # The url from where the 'config.vm.box' box will be fetched if it
   # doesn't already exist on the user's system.
@@ -88,11 +117,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # #               Managed by Puppet.\n"
   # # }
   #
-  config.vm.provision "puppet" do |puppet|
-    puppet.manifests_path = "puppet/manifests"
-    puppet.module_path = "puppet/modules"
-    puppet.manifest_file  = "site.pp"
-  end
 
   # Enable provisioning with chef solo, specifying a cookbooks path, roles
   # path, and data_bags path (all relative to this Vagrantfile), and adding

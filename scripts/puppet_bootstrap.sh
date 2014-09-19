@@ -23,3 +23,6 @@ rpm --quiet -q puppetlabs-release ||
 
 # Install Puppet
 install_from_repo puppet-3.5.1-1.el6
+
+# Update hostsfile
+grep -q ^192.168.122.10 /etc/hosts || echo -e "192.168.122.10\tpuppet" >> /etc/hosts
