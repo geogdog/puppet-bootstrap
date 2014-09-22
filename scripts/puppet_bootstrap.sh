@@ -26,3 +26,9 @@ install_from_repo puppet-3.5.1-1.el6
 
 # Update hostsfile
 grep -q ^192.168.122.10 /etc/hosts || echo -e "192.168.122.10\tpuppet" >> /etc/hosts
+
+# Symlink hiera config into /etc/puppet
+test -h /etc/puppet/hiera.yaml || ln -s /etc/hiera.yaml /etc/puppet/hiera.yaml
+
+# Copy hiera config
+cp /vagrant/puppet/hiera/hiera.yaml /etc/hiera.yaml
