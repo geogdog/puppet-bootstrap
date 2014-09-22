@@ -32,3 +32,16 @@ test -h /etc/puppet/hiera.yaml || ln -s /etc/hiera.yaml /etc/puppet/hiera.yaml
 
 # Copy hiera config
 cp /vagrant/puppet/hiera/hiera.yaml /etc/hiera.yaml
+
+# Run puppet in bootstrap mode (only do it once)
+if [ ! -f /etc/sysconfig/bootstrapped ]; then
+    if [ -d /etc/puppet/bootstrap ]; then
+        sudo puppet apply --pluginsync \
+            --modulepath=/etc/puppet/bootstrap/modules \
+            /etc/puppet/bootstrap/manifests/site.pp
+    else
+        echo "Not the puppetmaster...continue other shizzle"
+    fi
+else
+    echo "Already bootstrapped....not running puppet apply ..."
+fi
