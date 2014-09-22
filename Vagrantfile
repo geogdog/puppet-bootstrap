@@ -29,34 +29,27 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     # sync'd folders for puppet master
     puppetmaster.vm.synced_folder "puppet/manifests/", "/etc/puppet/manifests"
     puppetmaster.vm.synced_folder "puppet/modules/", "/etc/puppet/modules"
+    puppetmaster.vm.synced_folder "bootstrap/", "/etc/puppet/bootstrap"
     puppetmaster.vm.synced_folder "puppet/hiera/hiera/", "/var/lib/hiera"
 
-    puppetmaster.vm.provision "puppet" do |puppet|
-      puppet.manifests_path = "bootstrap/manifests"
-      puppet.module_path = "bootstrap/modules"
-      puppet.manifest_file  = "site.pp"
+    puppetmaster.vm.provision "shell", path: "scripts/puppet_bootstrap.sh"
+
+    puppetmaster.vm.provision "puppet_server" do |puppet|
+      puppet.puppet_server = "puppet"
+      puppet.options = "--verbose"
     end
 
   end
 
-  config.vm.provision "shell", path: "scripts/puppet_bootstrap.sh"
-
-
-  # Make this part configurable from a YAML boxes.yaml file?
-  #  boxes.each do |name, config|
-  #    box = boxes[name]
-  #    puts name
-  #    puts box['hostname']
-  #  end
-
+  # Iterate over yaml defined boxes and create them
   boxes.each do |name, conf|
     box = boxes[name]
     config.vm.define name do |extrabox|
       extrabox.vm.hostname = box['hostname']
       extrabox.vm.network "private_network", ip: box['ip']
+      extrabox.vm.provision "shell", path: "scripts/puppet_bootstrap.sh"
       extrabox.vm.provision "puppet_server" do |puppet|
         puppet.puppet_server = "puppet"
-        #puppet.options = "--verbose --debug"
         puppet.options = "--verbose"
       end
     end
