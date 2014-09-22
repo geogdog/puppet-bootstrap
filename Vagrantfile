@@ -29,6 +29,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     # sync'd folders for puppet master
     puppetmaster.vm.synced_folder "puppet/manifests/", "/etc/puppet/manifests"
     puppetmaster.vm.synced_folder "puppet/modules/", "/etc/puppet/modules"
+    puppetmaster.vm.synced_folder "puppet/hiera/hiera/", "/var/lib/hiera"
 
     puppetmaster.vm.provision "puppet" do |puppet|
       puppet.manifests_path = "bootstrap/manifests"
