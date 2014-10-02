@@ -1,0 +1,64 @@
+---
+classes:
+  - jenkins
+
+jenkins::configure_firewall: no
+
+jenkins_plugins:
+  git:
+    version: 2.2.1
+  git-client:
+    version: 1.9.1
+  ssh-credentials:
+    version: 1.6.1
+  scm-api:
+    version: 0.2
+  credentials:
+    version: 1.10
+  ssh-agent:
+    version: 1.4.1
+  gerrit-trigger:
+    version: 2.11.1
+  ruby-runtime:
+    version: 0.12
+  token-macro:
+    version: 1.5.1
+  rvm:
+    version: 0.4
+
+hosts:
+  gerrit:
+      name: gerrit.local
+      ip: 192.168.87.10
+
+extra_packages:
+  git:
+    ensure: installed
+  patch:
+    ensure: installed
+  libyaml-devel:
+    ensure: installed
+  libffi-devel:
+    ensure: installed
+  glibc-headers:
+    ensure: installed
+  autoconf:
+    ensure: installed
+  gcc-c++:
+    ensure: installed
+  glibc-devel:
+    ensure: installed
+  patch:
+    ensure: installed
+  readline-devel:
+    ensure: installed
+  zlib-devel:
+    ensure: installed
+  openssl-devel:
+    ensure: installed
+  automake:
+    ensure: installed
+  libtool:
+    ensure: installed
+  bison:
+    ensure: installed

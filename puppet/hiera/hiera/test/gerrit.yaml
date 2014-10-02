@@ -1,0 +1,13 @@
+---
+classes:
+  - gerrit
+
+gerrit::source: /vagrant/src/gerrit-2.8.5.war
+gerrit::target: /opt/gerrit
+gerrit::canonicalweburl: http://192.168.122.12:8080/
+gerrit::auth_type: development_become_any_account
+
+hosts:
+  jenkins:
+      name: test-jenkins-01.puppetbootstrap.local
+      ip: 192.168.122.11
