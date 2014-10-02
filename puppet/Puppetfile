@@ -7,6 +7,12 @@ mod 'puppetlabs/puppetdb', '3.0.1'
 mod 'puppetlabs/stdlib', '4.3.2'
 mod 'stahnma/epel', '0.0.6'
 mod 'stephenrjohnson/puppet', '0.0.23'
+mod 'gerrit',
+  :git => 'https://github.com/roidelapluie/puppet-gerrit.git'
+mod 'rtyler/jenkins', '1.1.0'
+mod 'puppetlabs/apt', '1.6.0'
+mod 'puppetlabs/java', '1.1.2'
+mod 'darin/zypprepo', '1.0.1'
 mod 'hostnamefacts',
   :git => 'https://github.com/geogdog/puppet-hostnamefacts',
   :tag => 'v0.1.5'

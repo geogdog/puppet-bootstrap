@@ -1,10 +1,7 @@
 ---
-client1:
-    hostname: test-client-01.puppetbootstrap.local
+jenkins:
+    hostname: test-jenkins-01.puppetbootstrap.local
     ip: 192.168.122.11
-client2:
-    hostname: test-client-02.puppetbootstrap.local
+gerrit:
+    hostname: test-gerrit-01.puppetbootstrap.local
     ip: 192.168.122.12
-client3:
-    hostname: test-client-03.puppetbootstrap.local
-    ip: 192.168.122.13
