@@ -12,8 +12,8 @@ installed locally::
 
   gem install puppet -v 3.5.1 --no-ri --no-rdoc
   gem install r10k -v 1.3.4 --no-ri --no-rdoc
-  cd bootstrap; r10k puppetfile install
-  cd puppet; r10k puppetfile install
+  pushd bootstrap; r10k puppetfile install; popd
+  pushd puppet; r10k puppetfile install; popd
 
 
 Known Issues
