@@ -10,8 +10,10 @@ Setup
 You need to download the puppet modules needed using r10k so you need this
 installed locally::
 
-  cd bootstrap; r10k puppetfile install
-  cd puppet; r10k puppetfile install
+  gem install puppet -v 3.5.1 --no-ri --no-rdoc
+  gem install r10k -v 1.3.4 --no-ri --no-rdoc
+  pushd bootstrap; r10k puppetfile install; popd
+  pushd puppet; r10k puppetfile install; popd
 
 
 Known Issues

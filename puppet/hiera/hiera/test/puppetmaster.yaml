@@ -1,0 +1,11 @@
+---
+classes:
+    - puppetdb
+    - puppet::master
+    - puppet::agent
+
+puppet::agent::puppet_server: test-puppetmaster-001.puppetbootstrap.local
+
+puppet::master::storeconfigs: true
+puppet::master::version: 3.5.1-1.el6
+puppet::master::autosign: true

@@ -1,8 +1,12 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
+require 'yaml'
 
 # Vagrantfile API/syntax version. Don't touch unless you know what you're doing!
 VAGRANTFILE_API_VERSION = "2"
+
+boxfile = File.join(File.expand_path(File.dirname(__FILE__)), 'boxes.yaml')
+boxes = YAML.load_file(boxfile)
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # All Vagrant configuration is done here. The most common configuration
@@ -25,34 +29,29 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     # sync'd folders for puppet master
     puppetmaster.vm.synced_folder "puppet/manifests/", "/etc/puppet/manifests"
     puppetmaster.vm.synced_folder "puppet/modules/", "/etc/puppet/modules"
+    puppetmaster.vm.synced_folder "bootstrap/", "/etc/puppet/bootstrap"
+    puppetmaster.vm.synced_folder "puppet/hiera/hiera/", "/var/lib/hiera"
 
-    puppetmaster.vm.provision "puppet" do |puppet|
-      puppet.manifests_path = "bootstrap/manifests"
-      puppet.module_path = "bootstrap/modules"
-      puppet.manifest_file  = "site.pp"
+    puppetmaster.vm.provision "shell", path: "scripts/puppet_bootstrap.sh"
+
+    puppetmaster.vm.provision "puppet_server" do |puppet|
+      puppet.puppet_server = "puppet"
+      puppet.options = "--verbose"
     end
 
   end
 
-  config.vm.provision "shell", path: "scripts/puppet_bootstrap.sh"
-
-
-  # Make this part configurable from a YAML boxes.yaml file?
-  config.vm.define "client1" do |client1|
-    client1.vm.hostname = "client1.puppetbootstrap.local"
-    client1.vm.provision "puppet_server" do |puppet|
-      puppet.puppet_server = "puppet"
-      #puppet.options = "--verbose --debug"
-      puppet.options = "--verbose"
-    end
-  end
-
-  config.vm.define "client2" do |client2|
-    client2.vm.hostname = "client2.puppetbootstrap.local"
-    client2.vm.provision "puppet_server" do |puppet|
-      puppet.puppet_server = "puppet"
-      #puppet.options = "--verbose --debug"
-      puppet.options = "--verbose"
+  # Iterate over yaml defined boxes and create them
+  boxes.each do |name, conf|
+    box = boxes[name]
+    config.vm.define name do |extrabox|
+      extrabox.vm.hostname = box['hostname']
+      extrabox.vm.network "private_network", ip: box['ip']
+      extrabox.vm.provision "shell", path: "scripts/puppet_bootstrap.sh"
+      extrabox.vm.provision "puppet_server" do |puppet|
+        puppet.puppet_server = "puppet"
+        puppet.options = "--verbose"
+      end
     end
   end
 
