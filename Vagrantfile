@@ -1,8 +1,12 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
+require 'yaml'
 
 # Vagrantfile API/syntax version. Don't touch unless you know what you're doing!
 VAGRANTFILE_API_VERSION = "2"
+
+boxfile = File.join(File.expand_path(File.dirname(__FILE__)), 'boxes.yaml')
+boxes = YAML.load_file(boxfile)
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # All Vagrant configuration is done here. The most common configuration
@@ -17,15 +21,39 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     puppetmaster.vm.hostname = "test-puppetmaster-001.puppetbootstrap.local"
 
     # forwarded port for apache
-    puppetmaster.vm.network "forwarded_port", guest: 80, host: 8080
-
+    #puppetmaster.vm.network "forwarded_port", guest: 80, host: 8080
+    
+    # Internal Network interface
+    puppetmaster.vm.network "private_network", ip: "192.168.122.10"
 
     # sync'd folders for puppet master
     puppetmaster.vm.synced_folder "puppet/manifests/", "/etc/puppet/manifests"
     puppetmaster.vm.synced_folder "puppet/modules/", "/etc/puppet/modules"
+    puppetmaster.vm.synced_folder "bootstrap/", "/etc/puppet/bootstrap"
+    puppetmaster.vm.synced_folder "puppet/hiera/hiera/", "/var/lib/hiera"
+
+    puppetmaster.vm.provision "shell", path: "scripts/puppet_bootstrap.sh"
+
+    puppetmaster.vm.provision "puppet_server" do |puppet|
+      puppet.puppet_server = "puppet"
+      puppet.options = "--verbose"
+    end
+
   end
 
-  config.vm.provision "shell", path: "scripts/puppet_bootstrap.sh"
+  # Iterate over yaml defined boxes and create them
+  boxes.each do |name, conf|
+    box = boxes[name]
+    config.vm.define name do |extrabox|
+      extrabox.vm.hostname = box['hostname']
+      extrabox.vm.network "private_network", ip: box['ip']
+      extrabox.vm.provision "shell", path: "scripts/puppet_bootstrap.sh"
+      extrabox.vm.provision "puppet_server" do |puppet|
+        puppet.puppet_server = "puppet"
+        puppet.options = "--verbose"
+      end
+    end
+  end
 
   # The url from where the 'config.vm.box' box will be fetched if it
   # doesn't already exist on the user's system.
@@ -88,11 +116,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # #               Managed by Puppet.\n"
   # # }
   #
-  config.vm.provision "puppet" do |puppet|
-    puppet.manifests_path = "puppet/manifests"
-    puppet.module_path = "puppet/modules"
-    puppet.manifest_file  = "site.pp"
-  end
 
   # Enable provisioning with chef solo, specifying a cookbooks path, roles
   # path, and data_bags path (all relative to this Vagrantfile), and adding

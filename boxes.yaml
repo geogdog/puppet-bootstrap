@@ -1,0 +1,7 @@
+---
+jenkins:
+    hostname: test-jenkins-01.puppetbootstrap.local
+    ip: 192.168.122.11
+gerrit:
+    hostname: test-gerrit-01.puppetbootstrap.local
+    ip: 192.168.122.12
